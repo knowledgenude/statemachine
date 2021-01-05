@@ -1,6 +1,7 @@
 package arm;
 
 import arm.fsm.FSM;
+import arm.states.States;
 import iron.system.Input;
 
 class Test extends iron.Trait {
@@ -18,7 +19,7 @@ class Test extends iron.Trait {
 			var walk = new Walk();
 			var run = new Run();
 
-			fsm.setState(idle);
+			fsm.setCurrentState(idle);
 
 			fsm.addTransition(toWalk, idle, walk);
 			fsm.addTransition(toRun, walk, run);

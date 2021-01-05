@@ -1,39 +1,49 @@
 package arm.fsm;
 
 class FSM {
-	var state: State;
+	//var previousState: State;
+	var currentState: State;
 	var nextState: State;
-	var transitions = new Array<Transition>();
 	var entered = false;
+	var transitions = new Array<Transition>();
 
 	public function new() {}
 
-	public function setState(state: State) {
-		this.state = state;
+	public function setCurrentState(state: State) {
+		this.currentState = state;
 	}
 
-	public function addTransition(condition: Void -> Bool, fromState: State, toState: State) {
-		transitions.push(new Transition(condition, fromState, toState));
+	public function addTransition(func: Void -> Bool, fromState: State, toState: State) {
+		transitions.push(new Transition(func, fromState, toState));
+	}
+
+	//public function getPreviousState() {
+	//	return previousState;
+	//}
+
+	public function getCurrentState() {
+		return currentState;
 	}
 
 	public function execute() {
 		if (!entered) {
-			state.onEnter();
+			currentState.onEnter();
 			entered = true;
 		}
 
-		state.onUpdate();
+		currentState.onUpdate();
 
 		for (t in transitions) {
-			if (t.getNextState(state) != null) {
-				nextState = t.getNextState(state);
+			if (t.getNextState(currentState) != null) {
+				nextState = t.getNextState(currentState);
 				break;
 			}
 		}
 
 		if (nextState != null) {
-			state.onExit();
-			state = nextState;
+			currentState.onExit();
+			//previousState = currentState;
+			currentState = nextState;
 			nextState = null;
 			entered = false;
 		}
@@ -41,18 +51,18 @@ class FSM {
 }
 
 class Transition {
-	var condition: Void -> Bool;
+	var func: Void -> Bool;
 	var fromState: State;
 	var toState: State;
 
-	public function new(condition: Void -> Bool, fromState: State, toState: State) {
-		this.condition = condition;
+	public function new(func: Void -> Bool, fromState: State, toState: State) {
+		this.func = func;
 		this.fromState = fromState;
 		this.toState = toState;
 	}
 
 	public inline function getNextState(state: State) {
-		if (fromState == state && condition()) return toState;
+		if (fromState == state && func()) return toState;
 		return null;
 	}
 }
@@ -65,52 +75,4 @@ class State {
 	public function onUpdate() {}
 
 	public function onExit() {}
-}
-
-class Idle extends State {
-	public function new() {
-		super();
-	}
-
-	public override function onEnter() {
-		trace("enter idle");
-	}
-
-	public override function onUpdate() {}
-
-	public override function onExit() {
-		trace("leave idle");
-	}
-}
-
-class Walk extends State {
-	public function new() {
-		super();
-	}
-
-	public override function onEnter() {
-		trace("enter walk");
-	}
-
-	public override function onUpdate() {}
-
-	public override function onExit() {
-		trace("leave walk");
-	}
-}
-
-class Run extends State {
-	public function new() {
-		super();
-	}
-
-	public override function onEnter() {
-		trace("enter run");
-	}
-
-	public override function onUpdate() {}
-
-	public override function onExit() {
-		trace("leave run");
-	}
 }
