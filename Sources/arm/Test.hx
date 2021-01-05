@@ -30,12 +30,10 @@ class Test extends iron.Trait {
 	}
 
 	function toWalk() {
-		if (keyboard.started("1")) return true;
-		return false;
+		return keyboard.started("1");
 	}
 
 	function toRun() {
-		if (keyboard.started("2")) return true;
-		return false;
+		return keyboard.started("2");
 	}
 }

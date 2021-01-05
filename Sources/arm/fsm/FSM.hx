@@ -44,7 +44,6 @@ class Transition {
 	var condition: Void -> Bool;
 	var fromState: State;
 	var toState: State;
-	var canEnter = true;
 
 	public function new(condition: Void -> Bool, fromState: State, toState: State) {
 		this.condition = condition;
