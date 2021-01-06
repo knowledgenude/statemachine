@@ -15,9 +15,9 @@ class Test extends iron.Trait {
 		notifyOnInit(function() {
 			fsm = new FSM();
 
-			var idle = new Idle();
-			var walk = new Walk();
-			var run = new Run();
+			var idle = new Idle(this);
+			var walk = new Walk(this);
+			var run = new Run(this);
 
 			fsm.setCurrentState(idle);
 

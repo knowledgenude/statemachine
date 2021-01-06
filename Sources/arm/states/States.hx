@@ -1,10 +1,11 @@
 package arm.states;
 
+import iron.Trait;
 import arm.fsm.FSM;
 
 class Idle extends State {
-	public function new() {
-		super();
+	public function new(parent: Trait) {
+		super(parent);
 	}
 
 	public override function onEnter() {
@@ -19,8 +20,8 @@ class Idle extends State {
 }
 
 class Walk extends State {
-	public function new() {
-		super();
+	public function new(parent: Trait) {
+		super(parent);
 	}
 
 	public override function onEnter() {
@@ -35,8 +36,8 @@ class Walk extends State {
 }
 
 class Run extends State {
-	public function new() {
-		super();
+	public function new(parent: Trait) {
+		super(parent);
 	}
 
 	public override function onEnter() {

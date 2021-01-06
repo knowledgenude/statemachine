@@ -1,29 +1,31 @@
 package arm.fsm;
 
+import iron.Trait;
+
 class FSM {
-	var previousState: State;
+	static var previousState: State;
 	var currentState: State;
-	var nextState: State;
-	var entered = false;
-	var currentTransitions = new Array<Transition>();
-	var transitions = new Array<Transition>();
+	static var nextState: State;
+	static var entered = false;
+	static var currentTransitions = new Array<Transition>();
+	static final transitions = new Array<Transition>();
 
-	public function new() {}
+	public function new(): Void {}
 
-	public function setCurrentState(state: State) {
-		this.currentState = state;
+	public function setCurrentState(state: State): Void {
+		currentState = state;
 	}
 
-	public function addTransition(func: Void -> Bool, fromState: State, toState: State) {
+	public function addTransition(func: Void -> Bool, fromState: State, toState: State): Void {
 		transitions.push(new Transition(func, fromState, toState));
 		syncTransitions();
 	}
 
-	public function getPreviousState(): State {
+	public inline function getPreviousState(): State {
 		return previousState;
 	}
 
-	public function getCurrentState(): State {
+	public inline function getCurrentState(): State {
 		return currentState;
 	}
 
@@ -63,11 +65,11 @@ class FSM {
 }
 
 class Transition {
-	var func: Void -> Bool;
-	var fromState: State;
-	var toState: State;
+	final func: Void -> Bool;
+	final fromState: State;
+	final toState: State;
 
-	public function new(func: Void -> Bool, fromState: State, toState: State) {
+	public function new(func: Void -> Bool, fromState: State, toState: State): Void {
 		this.func = func;
 		this.fromState = fromState;
 		this.toState = toState;
@@ -78,13 +80,16 @@ class Transition {
 	}
 
 	public inline function getNextState(): State {
-		if (func()) return toState;
-		return null;
+		return func() ? toState : null;
 	}
 }
 
 class State {
-	public function new() {}
+	final parent: Trait;
+
+	public function new(parent: Trait): Void {
+		this.parent = parent;
+	}
 
 	public function onEnter(): Void {}
 
