@@ -1,10 +1,11 @@
 package arm.fsm;
 
 class FSM {
-	//var previousState: State;
+	var previousState: State;
 	var currentState: State;
 	var nextState: State;
 	var entered = false;
+	var currentTransitions = new Array<Transition>();
 	var transitions = new Array<Transition>();
 
 	public function new() {}
@@ -15,17 +16,18 @@ class FSM {
 
 	public function addTransition(func: Void -> Bool, fromState: State, toState: State) {
 		transitions.push(new Transition(func, fromState, toState));
+		syncTransitions();
 	}
 
-	//public function getPreviousState() {
-	//	return previousState;
-	//}
+	public function getPreviousState(): State {
+		return previousState;
+	}
 
-	public function getCurrentState() {
+	public function getCurrentState(): State {
 		return currentState;
 	}
 
-	public function execute() {
+	public function execute(): Void {
 		if (!entered) {
 			currentState.onEnter();
 			entered = true;
@@ -33,19 +35,29 @@ class FSM {
 
 		currentState.onUpdate();
 
-		for (t in transitions) {
-			if (t.getNextState(currentState) != null) {
-				nextState = t.getNextState(currentState);
+		for (t in currentTransitions) {
+			nextState = t.getNextState();
+			if (nextState != null) {
+				changeState();
 				break;
 			}
 		}
+	}
 
-		if (nextState != null) {
-			currentState.onExit();
-			//previousState = currentState;
-			currentState = nextState;
-			nextState = null;
-			entered = false;
+	function changeState(): Void {
+		currentState.onExit();
+		previousState = currentState;
+		currentState = nextState;
+		nextState = null;
+		entered = false;
+		syncTransitions();
+	}
+
+	function syncTransitions(): Void {
+		currentTransitions = [];
+
+		for (t in transitions) {
+			if (t.get(currentState)) currentTransitions.push(t);
 		}
 	}
 }
@@ -61,8 +73,12 @@ class Transition {
 		this.toState = toState;
 	}
 
-	public inline function getNextState(state: State) {
-		if (fromState == state && func()) return toState;
+	public inline function get(state: State): Bool {
+		return state == fromState;
+	}
+
+	public inline function getNextState(): State {
+		if (func()) return toState;
 		return null;
 	}
 }
@@ -70,9 +86,9 @@ class Transition {
 class State {
 	public function new() {}
 
-	public function onEnter() {}
+	public function onEnter(): Void {}
 
-	public function onUpdate() {}
+	public function onUpdate(): Void {}
 
-	public function onExit() {}
+	public function onExit(): Void {}
 }
