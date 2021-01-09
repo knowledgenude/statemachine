@@ -23,8 +23,8 @@ class FSM {
 
 	public function execute() {
 		if (!entered) {
-			syncTransitions();
 			currentState.onEnter();
+			syncTransitions();
 			entered = true;
 		}
 
