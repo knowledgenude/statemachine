@@ -1,13 +1,12 @@
 package arm;
 
-import arm.fsm.FSM;
-import arm.states.States;
+import arm.FSM;
+import arm.States;
 import iron.system.Input;
 
 class Test extends iron.Trait {
-
+	var kb = Input.getKeyboard();
 	var fsm: FSM;
-	var keyboard: Keyboard = Input.getKeyboard();
 
 	public function new() {
 		super();
@@ -15,14 +14,16 @@ class Test extends iron.Trait {
 		notifyOnInit(function() {
 			fsm = new FSM();
 
-			var idle = new Idle(this);
-			var walk = new Walk(this);
-			var run = new Run(this);
+			var idle = new Idle();
+			var jumpStart = new JumpStart();
+			var jumpLoop = new JumpLoop();
+			var landing = new Landing();
 
-			fsm.setCurrentState(idle);
+			fsm.setInitState(idle);
 
-			fsm.addTransition(toWalk, idle, walk);
-			fsm.addTransition(toRun, walk, run);
+			fsm.addTransition(toJumpStart, idle, jumpStart);
+			fsm.addTransition(toJumpLoop, jumpStart, jumpLoop);
+			fsm.addTransition(toLanding, jumpLoop, idle);
 		});
 
 		notifyOnUpdate(function() {
@@ -30,11 +31,15 @@ class Test extends iron.Trait {
 		});
 	}
 
-	function toWalk() {
-		return keyboard.started("1");
+	public function toJumpStart() {
+		return kb.started("1");
 	}
 
-	function toRun() {
-		return keyboard.started("2");
+	public function toJumpLoop() {
+		return kb.started("1");
+	}
+
+	public function toLanding() {
+		return kb.started("1");
 	}
 }
