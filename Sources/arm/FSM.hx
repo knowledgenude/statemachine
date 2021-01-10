@@ -7,7 +7,7 @@ class FSM {
 	static var entered = false;
 
 	static final transitions = new Array<Transition>();
-	static var currentTransitions = new Array<Transition>();
+	static var tempTransitions = new Array<Transition>();
 
 	public function new() {}
 
@@ -18,32 +18,32 @@ class FSM {
 	public inline function addTransition(func, fromState, toState) {
 		var t = new Transition(func, fromState, toState);
 		transitions.push(t);
+		syncTransitions();
 		return t;
+	}
+
+	function syncTransitions() {
+		tempTransitions = [];
+
+		for (t in transitions) {
+			if (t.isLinked(currentState)) tempTransitions.push(t);
+		}
 	}
 
 	public function execute() {
 		if (!entered) {
 			currentState.onEnter();
-			syncTransitions();
 			entered = true;
 		}
 
 		currentState.onUpdate();
 
-		for (t in currentTransitions) {
+		for (t in tempTransitions) {
 			nextState = t.getNextState();
 			if (nextState != null) {
 				changeState();
 				break;
 			}
-		}
-	}
-
-	function syncTransitions() {
-		currentTransitions = [];
-
-		for (t in transitions) {
-			if (t.isLinked(currentState)) currentTransitions.push(t);
 		}
 	}
 
@@ -53,6 +53,7 @@ class FSM {
 		currentState = nextState;
 		entered = false;
 		nextState = null;
+		syncTransitions();
 	}
 }
 
