@@ -1,16 +1,16 @@
 package libraries;
 
 class FSM<T> {
-	final transitions = new Array<Transition<T>>();
-	final tempTransitions = new Array<Transition<T>>();
+	var transitions = new Array<Transition<T>>();
+	var tempTransitions = new Array<Transition<T>>();
 	var state: Null<State<T>>;
 	var entered = false;
 
 	public function new() {}
 
 	public function bindTransition(canEnter: Void -> Bool, fromState: State<T>, toState: State<T>) {
-		final transition = new Transition<T>(canEnter, fromState, toState);
-		transitions.push(transition);
+		var t = new Transition<T>(canEnter, fromState, toState);
+		transitions.push(t);
 		syncTransitions();
 	}
 
@@ -27,10 +27,10 @@ class FSM<T> {
 
 		state.onUpdate();
 
-		for (transition in tempTransitions) {
-			if (transition.canEnter()) {
+		for (t in tempTransitions) {
+			if (t.canEnter()) {
 				state.onExit();
-				state = transition.toState;
+				state = t.toState;
 				entered = false;
 				syncTransitions();
 				break;
@@ -41,16 +41,16 @@ class FSM<T> {
 	public function syncTransitions() {
 		tempTransitions.resize(0);
 
-		for (transition in transitions) {
-			if (transition.fromState == state) tempTransitions.push(transition);
+		for (t in transitions) {
+			if (t.fromState == state) tempTransitions.push(t);
 		}
 	}
 }
 
 class Transition<T> {
-	public final canEnter: Void -> Bool;
-	public final fromState: State<T>;
-	public final toState: State<T>;
+	public var canEnter: Void -> Bool;
+	public var fromState: State<T>;
+	public var toState: State<T>;
 
 	public function new(canEnter: Void -> Bool, fromState: State<T>, toState: State<T>) {
 		this.canEnter = canEnter;
@@ -60,7 +60,7 @@ class Transition<T> {
 }
 
 class State<T> {
-	final owner: T;
+	var owner: T;
 
 	public function new(owner: T) {
 		this.owner = owner;
